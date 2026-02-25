@@ -16,12 +16,25 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Create project structure
+        run: |
+          mkdir -p app/src/main/java/com/example/unitwatercalc
+          mkdir -p app/src/main/res/layout
+          mkdir -p app/src/main/res/values
+          mkdir -p app/src/main/assets
+          cp AndroidManifest.xml app/src/main/AndroidManifest.xml
+          cp MainActivity.kt app/src/main/java/com/example/unitwatercalc/MainActivity.kt
+          cp gradle-wrapper.properties gradle/wrapper/gradle-wrapper.properties 2>/dev/null || true
+
+      - name: Download HTML asset
+        run: |
+          cp index.html app/src/main/assets/index.html 2>/dev/null || echo "no index.html found"
+
       - name: Build APK
         run: |
-          ls -la
-          unzip UnitWaterCalc.zip -d project
-          ls -la project/
-          cd project/UnitWaterCalc
           chmod +x gradlew
           ./gradlew assembleDebug
 
@@ -29,4 +42,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
-          path: project/UnitWaterCalc/app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/debug/app-debug.apk
